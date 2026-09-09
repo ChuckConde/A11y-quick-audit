@@ -1,0 +1,224 @@
+:host {
+  display: block;
+  padding: var(--space-6) 0 var(--space-8);
+}
+
+.intro {
+  max-width: 60ch;
+  margin-bottom: var(--space-5);
+}
+.intro h1 {
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+}
+.lede {
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-subtle);
+  margin-bottom: var(--space-5);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.field > label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.field select {
+  font: inherit;
+  padding: 0.45rem 2rem 0.45rem 0.6rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.field--check label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.field--check input {
+  width: 1rem;
+  height: 1rem;
+}
+.hint {
+  font-size: 0.78rem;
+  color: var(--color-text-faint);
+  max-width: 38ch;
+}
+.toolbar-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+  align-self: center;
+}
+
+.workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+.pane {
+  min-width: 0;
+}
+.pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  min-height: 40px;
+}
+.pane-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.result-count {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.privacy-inline {
+  margin: var(--space-3) 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.placeholder {
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-text-muted);
+  display: grid;
+  gap: var(--space-2);
+  place-items: center;
+}
+.placeholder .muted {
+  font-size: 0.85rem;
+  max-width: 44ch;
+}
+.muted {
+  color: var(--color-text-muted);
+}
+
+.error-box {
+  border: 1px solid var(--sev-critical);
+  background: var(--sev-critical-bg);
+  color: var(--sev-critical);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+.error-box p {
+  margin: var(--space-1) 0 0;
+}
+
+.empty-good {
+  border: 1px solid var(--color-good);
+  background: var(--color-good-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-4);
+}
+.empty-good p {
+  margin: 0 0 var(--space-2);
+}
+.empty-good p:last-child {
+  margin-bottom: 0;
+}
+
+.notes {
+  margin: var(--space-4) 0 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.85rem;
+}
+.notes summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.notes ul {
+  margin: var(--space-2) 0 0;
+  padding-left: 1.2rem;
+  color: var(--color-text-muted);
+}
+
+.issues-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-3);
+  flex-wrap: wrap;
+}
+.issues-toolbar h3 {
+  margin: 0;
+}
+.issues-toolbar-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.issue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.downstream {
+  margin-top: var(--space-6);
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* Spinner respects reduced-motion via the global media query. */
+.spinner {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -0.1em;
+}
+.spinner--lg {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-width: 3px;
+  color: var(--color-accent);
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 960px) {
+  .workbench {
+    grid-template-columns: 1fr;
+  }
+}

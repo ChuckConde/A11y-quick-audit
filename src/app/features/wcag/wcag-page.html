@@ -1,0 +1,86 @@
+<div class="container prose-wide">
+  <header>
+    <h1>WCAG 2.2 reference for developers</h1>
+    <p class="lede">
+      A working summary of the Level A and AA success criteria, phrased in terms of the code you
+      write. Always confirm against the official
+      <a href="https://www.w3.org/TR/WCAG22/" rel="noopener">
+        WCAG 2.2 specification <span class="visually-hidden">(opens in a new tab)</span></a>
+      — this page is a study aid, not the normative text.
+    </p>
+  </header>
+
+  <form class="filters" role="search" (submit)="$event.preventDefault()">
+    <div class="field">
+      <label for="wcag-search">Search criteria</label>
+      <input
+        id="wcag-search"
+        type="search"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+        placeholder="e.g. contrast, label, focus, 1.4.3"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="field">
+      <label for="wcag-principle">Principle</label>
+      <select id="wcag-principle" [value]="principleFilter()" (change)="principleFilter.set($any($event.target).value)">
+        <option value="all">All principles</option>
+        @for (p of principles; track p) {
+          <option [value]="p">{{ p }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="wcag-level">Level</label>
+      <select id="wcag-level" [value]="levelFilter()" (change)="levelFilter.set($any($event.target).value)">
+        <option value="all">A and AA</option>
+        @for (l of levels; track l) {
+          <option [value]="l">{{ l }}</option>
+        }
+      </select>
+    </div>
+
+    <button type="button" class="btn btn--sm" (click)="reset()">Reset</button>
+  </form>
+
+  <p class="result-line" role="status">
+    Showing {{ count() }} criteri{{ count() === 1 ? 'on' : 'a' }}.
+  </p>
+
+  @if (count() === 0) {
+    <p class="empty">No criteria match that filter.</p>
+  }
+
+  <ul class="crit-list">
+    @for (c of filtered(); track c.num) {
+      <li class="crit" [id]="c.num">
+        <div class="crit-head">
+          <span class="crit-num">{{ c.num }}</span>
+          <h2>{{ c.name }}</h2>
+          <span class="crit-tags">
+            <span class="lvl lvl--{{ c.level }}">Level {{ c.level }}</span>
+            <span class="principle">{{ c.principle }}</span>
+          </span>
+        </div>
+        <p class="crit-summary">{{ c.summary }}</p>
+        <details>
+          <summary>In your code</summary>
+          <ul class="dev-notes">
+            @for (note of c.devNotes; track note) {
+              <li>{{ note }}</li>
+            }
+          </ul>
+          <p>
+            <a [href]="c.understandingUrl" rel="noopener">
+              Understanding {{ c.num }}
+              <span class="visually-hidden">(opens in a new tab)</span>
+            </a>
+          </p>
+        </details>
+      </li>
+    }
+  </ul>
+</div>

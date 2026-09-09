@@ -1,0 +1,185 @@
+<div class="container">
+  <header class="intro">
+    <h1>Find accessibility problems before your users do.</h1>
+    <p class="lede">
+      Paste your component. A11yFix finds accessibility issues, explains them, and shows you
+      how to fix them.
+    </p>
+  </header>
+
+  <div class="toolbar" role="group" aria-label="Analysis options">
+    <div class="field">
+      <label for="framework">Language</label>
+      <select
+        id="framework"
+        [value]="framework()"
+        (change)="onFrameworkChange($any($event.target).value)"
+      >
+        @for (fw of frameworks; track fw) {
+          <option [value]="fw">{{ frameworkLabels[fw] }}</option>
+        }
+      </select>
+      <span class="hint" id="vue-hint">Vue support is coming soon.</span>
+    </div>
+
+    <div class="field field--check">
+      <label>
+        <input type="checkbox" [checked]="includeSemantic()" (change)="includeSemantic.set($any($event.target).checked)" />
+        Run the semantic layer
+      </label>
+      <span class="hint">
+        Adds AI-style contextual findings. In this MVP the model is a local mock — still nothing
+        leaves your browser.
+      </span>
+    </div>
+
+    <div class="toolbar-actions">
+      <button type="button" class="btn btn--sm" (click)="loadSample()">Load sample</button>
+      <button type="button" class="btn btn--sm" (click)="clearCode()">Clear</button>
+    </div>
+  </div>
+
+  <div class="workbench">
+    <section class="pane pane--editor" aria-labelledby="editor-heading">
+      <div class="pane-head">
+        <h2 id="editor-heading">Your code</h2>
+        <button
+          type="button"
+          class="btn btn--primary"
+          (click)="analyze()"
+          [disabled]="status() === 'analyzing'"
+        >
+          @if (status() === 'analyzing') {
+            <span class="spinner" aria-hidden="true"></span> Analyzing…
+          } @else {
+            <span aria-hidden="true">▶</span> Analyze Accessibility
+          }
+        </button>
+      </div>
+
+      <app-code-editor
+        [value]="code()"
+        (valueChange)="code.set($event)"
+        [framework]="framework()"
+        [style.--editor-height]="'520px'"
+        label="Component source code to analyze"
+      />
+
+      <p class="privacy-inline">
+        <span aria-hidden="true">🔒</span>
+        Deterministic checks (axe-core + structural rules) run entirely in your browser.
+        Nothing is uploaded or stored.
+      </p>
+    </section>
+
+    <section class="pane pane--results" aria-labelledby="results-heading">
+      <div class="pane-head">
+        <h2 id="results-heading">Accessibility analysis</h2>
+        @if (hasResult()) {
+          <span class="result-count">{{ result()!.issues.length }} findings</span>
+        }
+      </div>
+
+      <p class="visually-hidden" role="status">{{ liveMessage() }}</p>
+
+      @switch (status()) {
+        @case ('idle') {
+          <div class="placeholder">
+            <p>Your report will appear here.</p>
+            <p class="muted">
+              A11yFix combines deterministic tooling with contextual analysis, and always tells
+              you which findings are confirmed and which need a human to verify.
+            </p>
+          </div>
+        }
+        @case ('analyzing') {
+          <div class="placeholder" aria-hidden="true">
+            <span class="spinner spinner--lg"></span>
+            <p>Running analysis layers…</p>
+          </div>
+        }
+        @case ('error') {
+          <div class="error-box" role="alert">
+            <strong>Could not analyze.</strong>
+            <p>{{ errorMessage() }}</p>
+          </div>
+        }
+        @case ('done') {
+          @if (result(); as res) {
+            <app-score-card [result]="res" />
+
+            @if (res.notes.length) {
+              <details class="notes">
+                <summary>Coverage &amp; limitations ({{ res.notes.length }})</summary>
+                <ul>
+                  @for (note of res.notes; track note) {
+                    <li>{{ note }}</li>
+                  }
+                </ul>
+              </details>
+            }
+
+            @if (res.issues.length === 0) {
+              <div class="empty-good">
+                <p><strong>No issues detected by the automated layers.</strong></p>
+                <p class="muted">
+                  This does not mean the component is accessible. Automated tools catch only a
+                  portion of WCAG — keyboard walkthroughs and screen-reader testing are still
+                  required.
+                </p>
+              </div>
+            } @else {
+              <div class="issues-toolbar">
+                <h3>Findings</h3>
+                <div class="issues-toolbar-actions">
+                  <button
+                    type="button"
+                    class="btn btn--sm"
+                    (click)="applyAllFixes()"
+                    [disabled]="autoFixableIds().length === 0 || allApplied()"
+                  >
+                    Apply all safe fixes ({{ autoFixableIds().length }})
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--sm btn--ghost"
+                    (click)="resetFixes()"
+                    [disabled]="appliedFixIds().size === 0"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              <ol class="issue-list">
+                @for (issue of res.issues; track trackIssue($index, issue)) {
+                  <li>
+                    <app-issue-card
+                      [issue]="issue"
+                      [framework]="res.framework"
+                      [applied]="isApplied(issue.id)"
+                      (applyFix)="applyFix($event)"
+                    />
+                  </li>
+                }
+              </ol>
+            }
+          }
+        }
+      }
+    </section>
+  </div>
+
+  @if (hasResult() && result(); as res) {
+    <div class="downstream">
+      <app-corrected-code-panel
+        [original]="code()"
+        [corrected]="correctedView().code"
+        [framework]="res.framework"
+        [appliedCount]="correctedView().appliedCount"
+        [manualCount]="correctedView().manualCount"
+      />
+      <app-privacy-panel [layers]="res.layers" [anyRemote]="res.sentToRemoteService" />
+    </div>
+  }
+</div>
