@@ -1,0 +1,22 @@
+{
+  // Cloudflare Workers configuration for the A11y Quick Audit Angular SPA.
+  // Used by Cloudflare's Git-based "Workers Builds" (deploy command: `npx wrangler deploy`)
+  // and by local `npm run deploy`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "a11y-quick-audit",
+  "compatibility_date": "2026-09-09",
+
+  // This project has no Worker script — it is a purely client-side Angular build.
+  // Cloudflare serves the static assets directly (an "assets-only" Worker).
+  "assets": {
+    // REAL Angular browser build directory produced by `ng build`
+    // (@angular/build:application, project name "a11yfix", no custom outputPath).
+    "directory": "./dist/a11yfix/browser",
+
+    // Angular is a client-side SPA using @angular/router with a catch-all route.
+    // Serve index.html (HTTP 200) for any path that is not a real file so that
+    // direct navigation / refresh on routes like /wcag or /learn works instead
+    // of returning a Cloudflare 404.
+    "not_found_handling": "single-page-application"
+  }
+}
